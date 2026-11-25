@@ -1,0 +1,36 @@
+import { NextResponse } from "next/server";
+import { adminGuard, readJson } from "@/lib/admin-api";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const guard = await adminGuard(req);
+  if (guard instanceof NextResponse) return guard;
+  const { id } = await params;
+  const { data, error } = await guard.admin.from("orders").select("*").eq("id", id).maybeSingle();
+  if (error || !data) return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
+
+  let receipt_signed_url: string | null = null;
+  if (data.receipt_url) {
+    const { data: signed } = await guard.admin.storage.from("receipts").createSignedUrl(data.receipt_url, 60 * 60);
+    receipt_signed_url = signed?.signedUrl ?? null;
+  }
+  return NextResponse.json({ order: { ...data, receipt_signed_url } });
+}
+
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const guard = await adminGuard(req);
+  if (guard instanceof NextResponse) return guard;
+  const { id } = await params;
+  const body = await readJson(req);
+  if (!body) return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
+
+  const payload: Record<string, unknown> = {};
+  const validStatuses = ["pending", "paid", "in_progress", "delivered", "cancelled"];
+  if (typeof body.status === "string" && validStatuses.includes(body.status)) payload.status = body.status;
+  if (typeof body.admin_notes === "string") payload.admin_notes = body.admin_notes;
+
+  const { error } = await guard.admin.from("orders").update(payload).eq("id", id);
+  if (error) return NextResponse.json({ error: "تعذر حفظ التعديلات" }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
