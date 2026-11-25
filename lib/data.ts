@@ -37,6 +37,7 @@ function baseProduct(p: Partial<Product> & Pick<Product, "id" | "name" | "slug" 
 export const FALLBACK_PRODUCTS: Product[] = [
   baseProduct({
     id: "prod-store-whatsapp",
+    images: [{ id: "img-prod-store-whatsapp", product_id: "prod-store-whatsapp", url: "/images/products/store-whatsapp.svg", sort_order: 1 }],
     name: "متجر إلكتروني بطلب على واتساب",
     slug: "متجر-إلكتروني-بطلب-على-واتساب",
     category_id: "cat-systems",
@@ -79,6 +80,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-menu-qr",
+    images: [{ id: "img-prod-menu-qr", product_id: "prod-menu-qr", url: "/images/products/menu-qr.svg", sort_order: 1 }],
     name: "منيو ديجيتال QR للمطاعم والكافيهات",
     slug: "منيو-ديجيتال-qr-للمطاعم-والكافيهات",
     category_id: "cat-systems",
@@ -103,6 +105,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-booking-system",
+    images: [{ id: "img-prod-booking-system", product_id: "prod-booking-system", url: "/images/products/booking-system.svg", sort_order: 1 }],
     name: "نظام حجز للعيادات والصالونات",
     slug: "نظام-حجز-للعيادات-والصالونات",
     category_id: "cat-systems",
@@ -126,6 +129,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-logo-identity",
+    images: [{ id: "img-prod-logo-identity", product_id: "prod-logo-identity", url: "/images/products/logo-identity.svg", sort_order: 1 }],
     name: "لوجو وهوية بصرية",
     slug: "لوجو-وهوية-بصرية",
     category_id: "cat-design",
@@ -168,6 +172,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-motion-video",
+    images: [{ id: "img-prod-motion-video", product_id: "prod-motion-video", url: "/images/products/motion-video.svg", sort_order: 1 }],
     name: "فيديو موشن جرافيك لافتتاح محل",
     slug: "فيديو-موشن-جرافيك-لافتتاح-محل",
     category_id: "cat-design",
@@ -191,6 +196,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-marketing-basic",
+    images: [{ id: "img-prod-marketing-basic", product_id: "prod-marketing-basic", url: "/images/products/marketing-basic.svg", sort_order: 1 }],
     name: "باقة تسويق Basic",
     slug: "باقة-تسويق-basic",
     category_id: "cat-marketing",
@@ -214,6 +220,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-marketing-pro",
+    images: [{ id: "img-prod-marketing-pro", product_id: "prod-marketing-pro", url: "/images/products/marketing-pro.svg", sort_order: 1 }],
     name: "باقة تسويق Professional",
     slug: "باقة-تسويق-professional",
     category_id: "cat-marketing",
@@ -237,6 +244,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-marketing-premium",
+    images: [{ id: "img-prod-marketing-premium", product_id: "prod-marketing-premium", url: "/images/products/marketing-premium.svg", sort_order: 1 }],
     name: "باقة تسويق Premium",
     slug: "باقة-تسويق-premium",
     category_id: "cat-marketing",
@@ -260,6 +268,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
   }),
   baseProduct({
     id: "prod-templates-restaurants",
+    images: [{ id: "img-prod-templates-restaurants", product_id: "prod-templates-restaurants", url: "/images/products/templates-restaurants.svg", sort_order: 1 }],
     name: "30 قالب بوست جاهز للمطاعم",
     slug: "30-قالب-بوست-جاهز-للمطاعم",
     category_id: "cat-templates",

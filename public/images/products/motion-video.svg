@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" role="img">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C4DFF"/><stop offset=".55" stop-color="#4A2FD6"/><stop offset="1" stop-color="#0B0B14"/></linearGradient>
+<linearGradient id="cy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D1FF"/><stop offset="1" stop-color="#0090FF"/></linearGradient>
+<linearGradient id="card" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#EDEDF7"/></linearGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0B0B14" flood-opacity="0.35"/></filter>
+</defs>
+<rect width="1200" height="750" fill="url(#bg)"/>
+<circle cx="1050" cy="90" r="180" fill="#00D1FF" opacity="0.14"/>
+<circle cx="120" cy="680" r="150" fill="#ffffff" opacity="0.07"/>
+<circle cx="980" cy="640" r="90" fill="#6C4DFF" opacity="0.35"/>
+<g fill="#ffffff" opacity="0.14"><circle cx="90" cy="110" r="5"/><circle cx="180" cy="70" r="4"/><circle cx="1120" cy="330" r="5"/><circle cx="1060" cy="420" r="4"/><circle cx="60" cy="420" r="4"/></g>
+<g filter="url(#sh)"><rect x="230" y="100" width="740" height="380" rx="28" fill="#0B0B14"/><rect x="230" y="100" width="740" height="380" rx="28" fill="none" stroke="#ffffff" stroke-opacity="0.2"/><circle cx="600" cy="270" r="64" fill="#00D1FF"/><polygon points="580,235 580,305 640,270" fill="#0B0B14"/><rect x="270" y="420" width="660" height="10" rx="5" fill="#ffffff" opacity="0.25"/><rect x="270" y="420" width="420" height="10" rx="5" fill="#00D1FF"/><circle cx="690" cy="425" r="12" fill="#ffffff"/><text x="930" y="455" text-anchor="end" font-family="sans-serif" font-size="20" fill="#ffffff" opacity="0.8">00:45 / 01:00</text></g><rect x="250" y="520" width="200" height="110" rx="16" fill="#6C4DFF" opacity="0.9"/><circle cx="350" cy="575" r="24" fill="#ffffff" opacity="0.9"/><polygon points="344,565 344,585 362,575" fill="#6C4DFF"/><rect x="480" y="520" width="200" height="110" rx="16" fill="#00D1FF" opacity="0.9"/><circle cx="580" cy="575" r="24" fill="#ffffff" opacity="0.9"/><polygon points="574,565 574,585 592,575" fill="#00D1FF"/><rect x="710" y="520" width="200" height="110" rx="16" fill="#FF8A5C" opacity="0.9"/><circle cx="810" cy="575" r="24" fill="#ffffff" opacity="0.9"/><polygon points="804,565 804,585 822,575" fill="#FF8A5C"/><rect x="940" y="520" width="200" height="110" rx="16" fill="#22C55E" opacity="0.9"/><circle cx="1040" cy="575" r="24" fill="#ffffff" opacity="0.9"/><polygon points="1034,565 1034,585 1052,575" fill="#22C55E"/><text x="600" y="680" text-anchor="middle" font-family="sans-serif" font-size="32" font-weight="700" fill="#ffffff">فيديو يشرح ويبيع</text>
+<g font-family="sans-serif" font-weight="700" font-size="34" fill="#ffffff"><text x="48" y="706">pixo</text><rect x="118" y="678" width="14" height="14" rx="3" fill="#00D1FF"/></g>
+<text x="1152" y="706" text-anchor="end" font-family="sans-serif" font-size="24" fill="#ffffff" opacity="0.75">متجر ديجيتال</text>
+</svg>

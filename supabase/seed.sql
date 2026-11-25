@@ -163,3 +163,23 @@ on conflict (code) do nothing;
 insert into settings (store_name, whatsapp_number, instapay_address, vodafone_cash_number)
 values ('Pixo', '01117543009', 'pixo@instapay', '01117543009')
 on conflict do nothing;
+
+-- ---------- صور المنتجات ----------
+insert into product_images (product_id, url, sort_order)
+select id, '/images/products/store-whatsapp.svg', 1 from products where slug = 'متجر-إلكتروني-بطلب-على-واتساب'
+union all
+select id, '/images/products/menu-qr.svg', 1 from products where slug = 'منيو-ديجيتال-qr-للمطاعم-والكافيهات'
+union all
+select id, '/images/products/booking-system.svg', 1 from products where slug = 'نظام-حجز-للعيادات-والصالونات'
+union all
+select id, '/images/products/logo-identity.svg', 1 from products where slug = 'لوجو-وهوية-بصرية'
+union all
+select id, '/images/products/motion-video.svg', 1 from products where slug = 'فيديو-موشن-جرافيك-لافتتاح-محل'
+union all
+select id, '/images/products/marketing-basic.svg', 1 from products where slug = 'باقة-تسويق-basic'
+union all
+select id, '/images/products/marketing-pro.svg', 1 from products where slug = 'باقة-تسويق-professional'
+union all
+select id, '/images/products/marketing-premium.svg', 1 from products where slug = 'باقة-تسويق-premium'
+union all
+select id, '/images/products/templates-restaurants.svg', 1 from products where slug = '30-قالب-بوست-جاهز-للمطاعم';
