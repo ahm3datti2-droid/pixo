@@ -41,7 +41,14 @@ export async function POST(req: Request) {
 
   const parsed = orderSchema.safeParse(raw);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "بيانات الطلب مش صحيحة" }, { status: 400 });
+    const first = parsed.error.issues[0];
+    const msg = first?.message ?? "";
+    // رسائل zod الافتراضية إنجليزي ومش مفهومة للعميل — بدّلها برسالة عربي واضحة
+    const friendly =
+      !msg || msg === "Invalid input" || msg.startsWith("Invalid input:") || msg.startsWith("Invalid option")
+        ? "بيانات الطلب مش صحيحة — راجع البيانات وحاول تاني"
+        : msg;
+    return NextResponse.json({ error: friendly }, { status: 400 });
   }
   const input = parsed.data;
 

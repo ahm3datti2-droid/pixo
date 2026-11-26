@@ -7,12 +7,12 @@ export const orderSchema = z.object({
   customer_name: z.string().min(3, "الاسم قصير جداً").max(100),
   phone: z.string().min(11, "رقم الموبايل غير صحيح").max(15),
   whatsapp: z.string().min(11, "رقم الواتساب غير صحيح").max(15),
-  email: z.string().email("الإيميل غير صحيح").optional().or(z.literal("")),
-  business_name: z.string().max(100).optional().or(z.literal("")),
-  notes: z.string().max(500).optional().or(z.literal("")),
+  email: z.string().email("الإيميل غير صحيح").optional().nullable().or(z.literal("")),
+  business_name: z.string().max(100).optional().nullable().or(z.literal("")),
+  notes: z.string().max(500).optional().nullable().or(z.literal("")),
   payment_method: z.enum(["instapay", "vodafone_cash"]),
-  coupon_code: z.string().max(50).optional().or(z.literal("")),
-  website: z.string().optional(), // honeypot — لازم يفضل فاضي
+  coupon_code: z.string().max(50).optional().nullable().or(z.literal("")),
+  website: z.string().optional().nullable(), // honeypot — لازم يفضل فاضي
 });
 
 export const contactSchema = z.object({

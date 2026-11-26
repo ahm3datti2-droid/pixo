@@ -88,7 +88,7 @@ export default function CheckoutForm({
       fd.append("business_name", businessName.trim());
       fd.append("notes", notes.trim());
       fd.append("payment_method", paymentMethod);
-      if (coupon) fd.append("coupon_code", coupon.code);
+      fd.append("coupon_code", coupon ? coupon.code : "");
       fd.append("website", honeypot); // honeypot — لازم يفضل فاضي
       if (receipt) fd.append("receipt", receipt);
 
