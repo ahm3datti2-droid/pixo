@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchProductBySlug, fetchProducts } from "@/lib/data";
 import ProductDetails from "@/components/ProductDetails";
+import PixelEvent from "@/components/PixelEvent";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +53,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 pb-24 sm:px-6 lg:pb-10">
+      <PixelEvent
+        event="ViewContent"
+        params={{ content_ids: [product.slug], content_name: product.name, content_type: "product", value: product.price, currency: "EGP" }}
+      />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ProductDetails product={product} related={related} />
     </div>

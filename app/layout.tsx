@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import SplashScreen from "@/components/SplashScreen";
+import MetaPixel from "@/components/MetaPixel";
 import { getSettings } from "@/lib/settings";
 
 const cairo = Cairo({
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="flex min-h-full flex-col font-sans">
+        <MetaPixel />
         <SplashScreen />
         <Header whatsappNumber={settings.whatsapp_number} announcementText={settings.announcement_text} />
         <main className="flex-1">{children}</main>

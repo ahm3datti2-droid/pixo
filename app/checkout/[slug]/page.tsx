@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { fetchProductBySlug } from "@/lib/data";
 import { getSettings } from "@/lib/settings";
 import CheckoutForm from "@/components/CheckoutForm";
+import PixelEvent from "@/components/PixelEvent";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,10 @@ export default async function CheckoutPage({
         <span className="font-bold text-primary dark:text-accent">{formatPrice(product.price)}</span>
       </p>
       <div className="mt-8">
+        <PixelEvent
+          event="InitiateCheckout"
+          params={{ content_ids: [product.slug], content_name: product.name, content_type: "product", value: product.price, currency: "EGP" }}
+        />
         <CheckoutForm product={product} settings={settings} initialPackageId={validPackage} />
       </div>
     </div>

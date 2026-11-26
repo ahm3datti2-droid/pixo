@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Product, SiteSettings } from "@/lib/types";
 import { formatPrice, isValidEgyptianPhone, whatsappLink } from "@/lib/utils";
+import { trackPixel } from "@/lib/pixel";
 
 type SuccessData = { order_number: string; total: number; product_name: string };
 
@@ -99,6 +100,13 @@ export default function CheckoutForm({
         return;
       }
       setSuccess({ order_number: data.order_number, total: data.total, product_name: data.product_name });
+      trackPixel("Purchase", {
+        value: data.total,
+        currency: "EGP",
+        content_ids: [product.slug],
+        content_name: data.product_name,
+        content_type: "product",
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("تعذر الاتصال بالسيرفر — اتأكد من النت وحاول تاني");
