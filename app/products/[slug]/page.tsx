@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchProductBySlug, fetchProducts } from "@/lib/data";
+import { getSettings } from "@/lib/settings";
 import ProductDetails from "@/components/ProductDetails";
 import PixelEvent from "@/components/PixelEvent";
 import { formatPrice } from "@/lib/utils";
@@ -32,6 +33,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound();
 
   const all = await fetchProducts();
+  const settings = await getSettings();
   const related = all
     .filter((p) => p.id !== product.id && (p.category_id === product.category_id || p.category_name === product.category_name))
     .slice(0, 3);
@@ -58,7 +60,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         params={{ content_ids: [product.slug], content_name: product.name, content_type: "product", value: product.price, currency: "EGP" }}
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <ProductDetails product={product} related={related} />
+      <ProductDetails product={product} related={related} whatsappNumber={settings.whatsapp_number} />
     </div>
   );
 }

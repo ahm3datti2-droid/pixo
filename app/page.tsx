@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchCategories, fetchPortfolio, fetchProducts, fetchTestimonials } from "@/lib/data";
+import { ARTICLES, formatArticleDate } from "@/lib/articles";
 import { getSettings } from "@/lib/settings";
 import ProductCard from "@/components/ProductCard";
 import { formatPrice, whatsappLink } from "@/lib/utils";
@@ -228,6 +229,46 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Blog */}
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <h2 className="text-2xl font-extrabold text-ink dark:text-white sm:text-3xl">من المدونة</h2>
+            <p className="mt-1 text-slate-500 dark:text-slate-400">نصايح عملية تفيد بيزنسك</p>
+          </div>
+          <Link href="/blog" className="hidden font-bold text-primary hover:underline dark:text-accent sm:block">
+            عرض كل المقالات ←
+          </Link>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {ARTICLES.slice(0, 3).map((a) => (
+            <Link
+              key={a.slug}
+              href={`/blog/${encodeURIComponent(a.slug)}`}
+              className="group overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-white/5"
+            >
+              <div className="flex aspect-[16/9] items-center justify-center bg-gradient-to-bl from-primary via-[#5a3df0] to-[#2b1a7a] text-6xl">
+                {a.emoji}
+              </div>
+              <div className="p-5">
+                <div className="flex items-center gap-2 text-xs font-bold">
+                  <span className="rounded-full bg-primary-light px-3 py-1 text-primary dark:bg-primary/20 dark:text-violet-300">
+                    {a.category}
+                  </span>
+                  <span className="text-slate-400">
+                    {formatArticleDate(a.date)} • {a.readingMinutes} دقايق قراءة
+                  </span>
+                </div>
+                <h3 className="mt-3 text-lg font-extrabold leading-snug text-ink group-hover:text-primary dark:text-white dark:group-hover:text-accent">
+                  {a.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{a.description}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* FAQ */}
       <section className="mx-auto max-w-4xl px-4 py-14 sm:px-6">

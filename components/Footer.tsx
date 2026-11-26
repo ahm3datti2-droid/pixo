@@ -39,6 +39,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           <h3 className="mb-4 font-bold text-white">روابط سريعة</h3>
           <ul className="space-y-2.5 text-sm">
             <li><Link href="/products" className="hover:text-accent">كل المنتجات</Link></li>
+            <li><Link href="/blog" className="hover:text-accent">المدونة</Link></li>
             <li><Link href="/works" className="hover:text-accent">أعمالنا</Link></li>
             <li><Link href="/about" className="hover:text-accent">من نحن</Link></li>
             <li><Link href="/track" className="hover:text-accent">تتبع طلبك</Link></li>
