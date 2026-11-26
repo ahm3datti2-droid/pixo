@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,17 +7,17 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import SplashScreen from "@/components/SplashScreen";
 import { getSettings } from "@/lib/settings";
 
-const plex = IBM_Plex_Sans_Arabic({
-  variable: "--font-plex",
+const cairo = Cairo({
+  variable: "--font-cairo",
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "700", "800", "900"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pixoeg.store"),
   title: {
-    default: "Pixo | حلول ديجيتال جاهزة.. لبيزنس أقوى",
+    default: "Pixo | حلول ديجيتال جاهزة لبيزنس أقوى",
     template: "%s | Pixo",
   },
   description:
@@ -27,8 +27,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ar_EG",
     siteName: "Pixo",
-    title: "Pixo | حلول ديجيتال جاهزة.. لبيزنس أقوى",
+    title: "Pixo | حلول ديجيتال جاهزة لبيزنس أقوى",
     description: "متاجر إلكترونية، منيو ديجيتال، أنظمة حجز، تصميم وهوية بصرية، وباقات تسويق — بأسعار ثابتة وواضحة.",
+    images: [{ url: "/images/pixo-logo.jpg", width: 1640, height: 720, alt: "Pixo" }],
   },
   twitter: { card: "summary_large_image" },
 };
@@ -39,7 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const settings = await getSettings();
 
   return (
-    <html lang="ar" dir="rtl" className={`${plex.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>

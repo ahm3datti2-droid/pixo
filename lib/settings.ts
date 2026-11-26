@@ -4,12 +4,12 @@ import type { SiteSettings } from "./types";
 export const DEFAULT_SETTINGS: SiteSettings = {
   store_name: "Pixo",
   whatsapp_number: "01117543009",
-  instapay_address: "pixo@instapay",
-  vodafone_cash_number: "01117543009",
+  instapay_address: "a7m3d.attia@instapay",
+  vodafone_cash_number: "01121341717",
   facebook_url: "",
   instagram_url: "",
   tiktok_url: "",
-  hero_title: "حلول ديجيتال جاهزة.. لبيزنس أقوى",
+  hero_title: "حلول ديجيتال جاهزة لبيزنس أقوى",
   hero_subtitle:
     "متاجر إلكترونية، منيو ديجيتال، أنظمة حجز، تصميم وهوية بصرية، وباقات تسويق — كل اللي بيزنسك محتاجه في مكان واحد، بأسعار ثابتة وواضحة، وتسليم في معاد محدد.",
   announcement_text: "خصم لفترة محدودة على باقات التسويق — اطلب دلوقتي قبل ما العرض يخلص",

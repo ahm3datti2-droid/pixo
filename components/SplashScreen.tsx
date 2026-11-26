@@ -51,7 +51,7 @@ export default function SplashScreen() {
       <img
         src="/images/pixo-logo.jpg"
         alt="Pixo"
-        className="h-auto w-[min(78vw,420px)] animate-[splashZoom_1.4s_ease-out]"
+        className="h-auto w-[min(88vw,560px)] animate-[splashZoom_1.4s_ease-out]"
         onError={() => setGone(true)}
       />
       <style>{`@keyframes splashZoom { from { transform: scale(.92); opacity: 0 } to { transform: scale(1); opacity: 1 } }`}</style>

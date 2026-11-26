@@ -127,7 +127,7 @@ create table if not exists settings (
   facebook_url text not null default '',
   instagram_url text not null default '',
   tiktok_url text not null default '',
-  hero_title text not null default 'حلول ديجيتال جاهزة.. لبيزنس أقوى',
+  hero_title text not null default 'حلول ديجيتال جاهزة لبيزنس أقوى',
   hero_subtitle text not null default 'متاجر إلكترونية، منيو ديجيتال، أنظمة حجز، تصميم وهوية بصرية، وباقات تسويق — كل اللي بيزنسك محتاجه في مكان واحد، بأسعار ثابتة وواضحة، وتسليم في معاد محدد.',
   announcement_text text not null default 'خصم لفترة محدودة على باقات التسويق — اطلب دلوقتي قبل ما العرض يخلص',
   created_at timestamptz not null default now(),

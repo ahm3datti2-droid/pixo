@@ -10,7 +10,7 @@
   --color-night: #0b0b14;
   --color-ink: #1a1a2e;
   --color-mist: #f7f7fb;
-  --font-sans: var(--font-plex), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-cairo), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 html {
