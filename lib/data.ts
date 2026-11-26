@@ -294,9 +294,15 @@ export const FALLBACK_PRODUCTS: Product[] = [
 ];
 
 export const FALLBACK_PORTFOLIO: PortfolioItem[] = [
-  { id: "work-1", title: "متجر إلكتروني — ملابس", image_url: "", link: null, category: "أنظمة ومواقع جاهزة", sort_order: 1, created_at: "2026-11-26T00:00:00.000Z" },
-  { id: "work-2", title: "منيو ديجيتال — كافيه", image_url: "", link: null, category: "أنظمة ومواقع جاهزة", sort_order: 2, created_at: "2026-11-26T00:00:00.000Z" },
-  { id: "work-3", title: "هوية بصرية — مطعم", image_url: "", link: null, category: "تصميم وموشن جرافيك", sort_order: 3, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-ismailia-hub", title: "دليل خدمات الإسماعيلية", image_url: "/images/works/ismailia-hub.svg", link: "https://www.ismailiahub.com", category: "دليل خدمات — 341 خدمة موثقة", sort_order: 1, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-urbano", title: "أوربانو", image_url: "/images/works/urbano.svg", link: "https://urbano1.app", category: "دليل خدمات — 148 مكان موثق", sort_order: 2, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-telkebir", title: "خدمات التل الكبير", image_url: "/images/works/telkebir.svg", link: "https://www.telkebir.com", category: "دليل خدمات + مواعيد قطارات", sort_order: 3, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-ezz-gallery", title: "Ezz Gallery", image_url: "/images/works/ezz-gallery.svg", link: "https://ezzgallery.com", category: "متجر إلكتروني — ديكور وهدايا", sort_order: 4, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-el-fasl", title: "EL FASL — الفصل", image_url: "/images/works/el-fasl.svg", link: "https://el-fasl.vercel.app", category: "منصة تفاعلية للمعلمين", sort_order: 5, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-darsak-ar", title: "درسك AR", image_url: "/images/works/darsak-ar.svg", link: "https://www.drsak.online", category: "دروس واقع معزز للمعلمين", sort_order: 6, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-ebnely", title: "ابنيلي", image_url: "/images/works/ebnely.svg", link: "https://ebnely.vercel.app", category: "دليل أسعار التشطيب في مصر", sort_order: 7, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-nexora-bi", title: "NEXORA BI", image_url: "/images/works/nexora-bi.svg", link: "https://nexora-business-intelligence.vercel.app", category: "منصة ذكاء أعمال", sort_order: 8, created_at: "2026-11-26T00:00:00.000Z" },
+  { id: "work-ims", title: "نظام الإدارة المتكامل", image_url: "/images/works/ims.svg", link: "https://integrated-management-system-flame.vercel.app", category: "نظام إدارة مؤسسة تعليمية", sort_order: 9, created_at: "2026-11-26T00:00:00.000Z" },
 ];
 
 /* ------------------------------------------------------------------ */

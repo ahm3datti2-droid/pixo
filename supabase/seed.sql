@@ -149,9 +149,15 @@ insert into packages (product_id, name, price, features, sort_order) values
 
 -- ---------- أعمال تجريبية (عدّلها أو امسحها من لوحة الأدمن) ----------
 insert into portfolio (title, image_url, link, category, sort_order) values
-  ('متجر إلكتروني — ملابس', '', null, 'أنظمة ومواقع جاهزة', 1),
-  ('منيو ديجيتال — كافيه', '', null, 'أنظمة ومواقع جاهزة', 2),
-  ('هوية بصرية — مطعم', '', null, 'تصميم وموشن جرافيك', 3)
+  ('دليل خدمات الإسماعيلية', '/images/works/ismailia-hub.svg', 'https://www.ismailiahub.com', 'دليل خدمات — 341 خدمة موثقة', 1),
+  ('أوربانو', '/images/works/urbano.svg', 'https://urbano1.app', 'دليل خدمات — 148 مكان موثق', 2),
+  ('خدمات التل الكبير', '/images/works/telkebir.svg', 'https://www.telkebir.com', 'دليل خدمات + مواعيد قطارات', 3),
+  ('Ezz Gallery', '/images/works/ezz-gallery.svg', 'https://ezzgallery.com', 'متجر إلكتروني — ديكور وهدايا', 4),
+  ('EL FASL — الفصل', '/images/works/el-fasl.svg', 'https://el-fasl.vercel.app', 'منصة تفاعلية للمعلمين', 5),
+  ('درسك AR', '/images/works/darsak-ar.svg', 'https://www.drsak.online', 'دروس واقع معزز للمعلمين', 6),
+  ('ابنيلي', '/images/works/ebnely.svg', 'https://ebnely.vercel.app', 'دليل أسعار التشطيب في مصر', 7),
+  ('NEXORA BI', '/images/works/nexora-bi.svg', 'https://nexora-business-intelligence.vercel.app', 'منصة ذكاء أعمال', 8),
+  ('نظام الإدارة المتكامل', '/images/works/ims.svg', 'https://integrated-management-system-flame.vercel.app', 'نظام إدارة مؤسسة تعليمية', 9)
 on conflict do nothing;
 
 -- ---------- كوبون ترحيبي ----------
