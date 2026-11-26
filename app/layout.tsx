@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import SplashScreen from "@/components/SplashScreen";
 import { getSettings } from "@/lib/settings";
 
 const plex = IBM_Plex_Sans_Arabic({
@@ -14,7 +15,7 @@ const plex = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pixo.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pixoeg.store"),
   title: {
     default: "Pixo | حلول ديجيتال جاهزة.. لبيزنس أقوى",
     template: "%s | Pixo",
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="flex min-h-full flex-col font-sans">
+        <SplashScreen />
         <Header whatsappNumber={settings.whatsapp_number} announcementText={settings.announcement_text} />
         <main className="flex-1">{children}</main>
         <Footer settings={settings} />
