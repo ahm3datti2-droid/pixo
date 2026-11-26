@@ -121,6 +121,30 @@ insert into products (name, slug, category_id, delivery_type, short_description,
 القوالب بصيغة Canva قابلة للتعديل أونلاين من الموبايل أو الكمبيوتر، وبمقاسات جاهزة للفيسبوك والإنستجرام. بتشتري مرة واحدة وتستخدمها على طول من غير أي اشتراك شهري.',
   '["30 قالب بوست بتصاميم متنوعة", "قابلة للتعديل على Canva مجاناً", "مقاسات فيسبوك وإنستجرام", "عروض ووجبات ومناسبات", "استخدام مدى الحياة بدون اشتراك", "تحميل فوري بعد تأكيد الدفع"]'::jsonb,
   350, 550, 'فوري بعد تأكيد الدفع', true, 9
+),
+(
+  'اشتراك ChatGPT Plus شهري',
+  'اشتراك-chatgpt-plus-شهري',
+  (select id from categories where slug = 'اشتراكات-شهرية'),
+  'subscription',
+  'اشتراك ChatGPT Plus لمدة شهر كامل — أسرع وأقوى، مع أولوية في أوقات الضغط.',
+  'اشتراك ChatGPT Plus لمدة شهر كامل، بنفعّله لك على حسابك بعد تأكيد الدفع. بتستفيد من سرعة أعلى في الردود وأولوية في الوصول وقت الضغط، مع مزايا باقة Plus الكاملة.
+
+بعد ما تطلب، بنتواصل معك على واتساب ونفعّل الاشتراك، ولو واجهتك أي مشكلة في التفعيل بنساعدك لحد ما يشتغل معك.',
+  '["اشتراك لمدة شهر كامل (30 يوم)", "تفعيل على حسابك الحالي", "سرعة أعلى في الردود", "أولوية في الوصول وقت الضغط", "مزايا باقة Plus الكاملة", "دعم واتساب أثناء التفعيل"]'::jsonb,
+  1200, null, 'شهري', true, 10
+),
+(
+  'اشتراك Claude Plus شهري',
+  'اشتراك-claude-plus-شهري',
+  (select id from categories where slug = 'اشتراكات-شهرية'),
+  'subscription',
+  'اشتراك Claude Plus لمدة شهر كامل — مساعد ذكي للكتابة والبرمجة والتحليل.',
+  'اشتراك Claude Plus لمدة شهر كامل، بنفعّله لك على حسابك بعد تأكيد الدفع. مساعد ذكي قوي في الكتابة والتلخيص والبرمجة وتحليل الملفات، مناسب للشغل والدراسة.
+
+بعد ما تطلب، بنتواصل معك على واتساب ونفعّل الاشتراك، ولو واجهتك أي مشكلة في التفعيل بنساعدك لحد ما يشتغل معك.',
+  '["اشتراك لمدة شهر كامل (30 يوم)", "تفعيل على حسابك الحالي", "كتابة وتلخيص وتحليل ملفات", "مساعدة في البرمجة والكود", "مزايا باقة Plus الكاملة", "دعم واتساب أثناء التفعيل"]'::jsonb,
+  1250, null, 'شهري', true, 11
 )
 on conflict (slug) do nothing;
 
@@ -188,4 +212,8 @@ select id, '/images/products/marketing-pro.svg', 1 from products where slug = '�
 union all
 select id, '/images/products/marketing-premium.svg', 1 from products where slug = 'باقة-تسويق-premium'
 union all
-select id, '/images/products/templates-restaurants.svg', 1 from products where slug = '30-قالب-بوست-جاهز-للمطاعم';
+select id, '/images/products/templates-restaurants.svg', 1 from products where slug = '30-قالب-بوست-جاهز-للمطاعم'
+union all
+select id, '/images/products/chatgpt-plus.svg', 1 from products where slug = 'اشتراك-chatgpt-plus-شهري'
+union all
+select id, '/images/products/claude-plus.svg', 1 from products where slug = 'اشتراك-claude-plus-شهري';
