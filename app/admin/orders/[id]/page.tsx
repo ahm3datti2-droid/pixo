@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/admin-client";
 import type { Order, OrderStatus } from "@/lib/types";
 import { formatPrice, ORDER_STATUS_LABELS, whatsappLink } from "@/lib/utils";
@@ -12,6 +12,7 @@ const STATUSES: OrderStatus[] = ["pending", "paid", "in_progress", "delivered", 
 
 export default function AdminOrderDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,6 +20,8 @@ export default function AdminOrderDetailPage() {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -145,6 +148,29 @@ export default function AdminOrderDetailPage() {
             {saved && <p className="mt-3 text-sm font-bold text-emerald-600">{saved}</p>}
             <button type="button" onClick={save} disabled={saving} className="mt-4 w-full rounded-full bg-primary py-3.5 font-extrabold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-dark disabled:opacity-60">
               {saving ? "جاري الحفظ…" : "حفظ التغييرات"}
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={async () => {
+                if (!confirmDelete) {
+                  setConfirmDelete(true);
+                  return;
+                }
+                setDeleting(true);
+                const res = await adminFetch(`/api/admin/orders/${params.id}`, { method: "DELETE" });
+                if (!res.ok) {
+                  const data = await res.json().catch(() => ({}));
+                  setError((data as { error?: string }).error ?? "تعذر حذف الطلب");
+                  setDeleting(false);
+                  setConfirmDelete(false);
+                } else {
+                  router.replace("/admin/orders");
+                }
+              }}
+              className={`mt-3 w-full rounded-full py-3 font-extrabold text-white transition disabled:opacity-60 ${confirmDelete ? "bg-rose-600 hover:bg-rose-700" : "bg-rose-500/90 hover:bg-rose-500"}`}
+            >
+              {deleting ? "جاري الحذف…" : confirmDelete ? "متأكد؟ اضغط تاني لحذف الطلب نهائياً" : "حذف الطلب"}
             </button>
           </div>
         </div>

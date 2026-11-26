@@ -34,3 +34,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (error) return NextResponse.json({ error: "تعذر حفظ التعديلات" }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
+
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const guard = await adminGuard(req);
+  if (guard instanceof NextResponse) return guard;
+  const { id } = await params;
+  const { data: order } = await guard.admin.from("orders").select("id, receipt_url").eq("id", id).maybeSingle();
+  if (!order) return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
+  if (order.receipt_url) {
+    await guard.admin.storage.from("receipts").remove([order.receipt_url as string]);
+  }
+  const { error } = await guard.admin.from("orders").delete().eq("id", id);
+  if (error) return NextResponse.json({ error: "تعذر حذف الطلب" }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
