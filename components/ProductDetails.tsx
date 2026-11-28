@@ -71,6 +71,9 @@ export default function ProductDetails({
             <span className="rounded-full bg-primary-light px-3 py-1 font-bold text-primary dark:bg-primary/20 dark:text-violet-300">
               {product.category_name ?? "عام"}
             </span>
+            {product.is_new && (
+              <span className="rounded-full bg-emerald-500 px-3 py-1 font-bold text-white">جديد</span>
+            )}
             <span className="rounded-full bg-mist px-3 py-1 font-bold text-slate-600 dark:bg-white/10 dark:text-slate-300">
               {DELIVERY_TYPE_LABELS[product.delivery_type]}
             </span>
@@ -196,10 +199,50 @@ export default function ProductDetails({
         </div>
       </div>
 
+      {/* Steps + tips — من details بتاع المنتج، بتظهر بس لو موجودة */}
+      {product.details?.steps && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-extrabold text-ink dark:text-white">{product.details.steps.title}</h2>
+          <div className="mt-6 grid gap-5 md:grid-cols-3">
+            {product.details.steps.items.map((step, i) => (
+              <div
+                key={step}
+                className="relative rounded-3xl border border-slate-100 bg-mist p-6 text-center shadow-sm dark:border-white/10 dark:bg-white/5"
+              >
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl font-extrabold text-white shadow-lg shadow-primary/30">
+                  {i + 1}
+                </div>
+                <p className="mt-4 font-bold leading-relaxed text-ink dark:text-white">{step}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {product.details?.tips && (
+        <div className="mt-8 rounded-3xl border border-amber-200 bg-amber-50 p-6 shadow-sm dark:border-amber-500/30 dark:bg-amber-500/10">
+          <h2 className="text-xl font-extrabold text-ink dark:text-white">{product.details.tips.title}</h2>
+          <ul className="mt-4 space-y-3">
+            {product.details.tips.items.map((tip) => (
+              <li key={tip} className="flex items-start gap-2.5 text-slate-600 dark:text-slate-300">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-600 dark:text-amber-400">💡</span>
+                <span className="leading-relaxed">{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Product FAQ */}
       <div className="mx-auto mt-12 max-w-3xl">
         <h2 className="text-center text-xl font-extrabold text-ink dark:text-white">أسئلة عن المنتج ده</h2>
         <div className="mt-5 space-y-3">
+          {product.details?.faq?.map((item) => (
+            <details key={item.q} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <summary className="cursor-pointer list-none font-bold text-ink dark:text-white">{item.q}</summary>
+              <p className="mt-3 leading-relaxed text-slate-500 dark:text-slate-400">{item.a}</p>
+            </details>
+          ))}
           <details className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
             <summary className="cursor-pointer list-none font-bold text-ink dark:text-white">إزاي أطلب المنتج ده؟</summary>
             <p className="mt-3 leading-relaxed text-slate-500 dark:text-slate-400">

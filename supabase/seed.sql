@@ -160,6 +160,22 @@ insert into products (name, slug, category_id, delivery_type, short_description,
 )
 on conflict (slug) do nothing;
 
+-- ---------- خدمة صور المنتجات بالذكاء الاصطناعي ----------
+insert into products (name, slug, category_id, delivery_type, short_description, description, features, price, old_price, delivery_time, is_featured, is_new, details, sort_order) values
+(
+  'صور منتجات احترافية بالذكاء الاصطناعي',
+  'صور-منتجات-احترافية-بالذكاء-الاصطناعي',
+  (select id from categories where slug = 'تصميم-وموشن-جرافيك'),
+  'service',
+  'صوّر منتجك بموبايلك على أي خلفية.. ونرجعهولك صورة ستوديو احترافية جاهزة للبيع.',
+  'مش محتاج مصوّر ولا ستوديو. صوّر منتجك بموبايلك، وإحنا نحوّله لصور احترافية بخلفيات ستوديو أو مشاهد إعلانية، جاهزة لصفحتك ومتجرك وإعلاناتك.',
+  '["خلفية ستوديو نضيفة أو مشهد إعلاني حسب اختيارك", "تحسين الإضاءة والألوان", "مقاسات جاهزة للبوست والستوري والمتجر", "تعديل واحد مجاني على كل صورة"]'::jsonb,
+  350, null, '24 لـ 48 ساعة من استلام الصور', true, true,
+  '{"steps":{"title":"إزاي بتشتغل؟","items":["اختار الباقة وادفع","ابعتلنا صور منتجاتك من الموبايل","استلم صورك الاحترافية خلال 48 ساعة"]},"tips":{"title":"عشان تطلع أحسن نتيجة","items":["صوّر في مكان فيه إضاءة كويسة","خلّي المنتج واضح وكامل في الصورة","صوّر من أكتر من زاوية"]},"faq":[{"q":"لازم الصورة تكون احترافية؟","a":"لأ خالص، أي صورة واضحة من الموبايل كفاية."},{"q":"ينفع أختار شكل الخلفية؟","a":"أيوه، اكتبلنا الستايل اللي تحبه أو ابعت صورة مثال."},{"q":"ينفع للملابس والأكل؟","a":"أيوه، لأغلب المنتجات. ولو منتجك محتاج حاجة خاصة هنقولك قبل ما تدفع."}],"order":{"product_count":true,"styles":["خلفية بيضاء ستوديو","خلفية ملونة","مشهد إعلاني","سيبوها علينا"],"product_photos":true}}'::jsonb,
+  5
+)
+on conflict (slug) do nothing;
+
 -- ---------- باقات المنتجات ----------
 insert into packages (product_id, name, price, features, sort_order) values
 (
@@ -182,6 +198,14 @@ insert into packages (product_id, name, price, features, sort_order) values
   'هوية كاملة', 3500,
   '["لوجو + دليل هوية", "كارت شخصي وليترهيد", "قوالب سوشيال ميديا", "غلاف فيسبوك وواتساب"]'::jsonb, 2
 );
+
+-- باقات خدمة صور المنتجات بالذكاء الاصطناعي
+insert into packages (product_id, name, price, features, sort_order)
+select id, 'باقة 5 صور', 350, '[]'::jsonb, 1 from products where slug = 'صور-منتجات-احترافية-بالذكاء-الاصطناعي'
+union all
+select id, 'باقة 15 صورة', 900, '[]'::jsonb, 2 from products where slug = 'صور-منتجات-احترافية-بالذكاء-الاصطناعي'
+union all
+select id, 'باقة 30 صورة', 1600, '[]'::jsonb, 3 from products where slug = 'صور-منتجات-احترافية-بالذكاء-الاصطناعي';
 
 -- ---------- أعمال تجريبية (عدّلها أو امسحها من لوحة الأدمن) ----------
 insert into portfolio (title, image_url, link, category, sort_order) values
@@ -230,4 +254,6 @@ select id, '/images/products/chatgpt-plus.svg', 1 from products where slug = 'ا
 union all
 select id, '/images/products/claude-plus.svg', 1 from products where slug = 'اشتراك-claude-plus-شهري'
 union all
-select id, '/images/products/bundle-starter.svg', 1 from products where slug = 'باقة-البداية-الكاملة-متجر-تسويق';
+select id, '/images/products/bundle-starter.svg', 1 from products where slug = 'باقة-البداية-الكاملة-متجر-تسويق'
+union all
+select id, '/images/products/ai-product-photos.svg', 1 from products where slug = 'صور-منتجات-احترافية-بالذكاء-الاصطناعي';

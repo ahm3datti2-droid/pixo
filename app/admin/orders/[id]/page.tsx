@@ -6,7 +6,7 @@ import { adminFetch } from "@/lib/admin-client";
 import type { Order, OrderStatus } from "@/lib/types";
 import { formatPrice, ORDER_STATUS_LABELS, whatsappLink } from "@/lib/utils";
 
-type OrderDetail = Order & { receipt_signed_url: string | null };
+type OrderDetail = Order & { receipt_signed_url: string | null; product_photos_signed_urls: string[] | null };
 
 const STATUSES: OrderStatus[] = ["pending", "paid", "in_progress", "delivered", "cancelled"];
 
@@ -104,6 +104,8 @@ export default function AdminOrderDetailPage() {
             <dl className="mt-4 space-y-2.5 text-sm">
               <div className="flex justify-between gap-3"><dt className="text-slate-400">المنتج</dt><dd className="font-bold text-ink dark:text-white">{order.product_name}</dd></div>
               {order.package_name && <div className="flex justify-between gap-3"><dt className="text-slate-400">الباقة</dt><dd className="font-bold text-ink dark:text-white">{order.package_name}</dd></div>}
+              {order.product_count != null && <div className="flex justify-between gap-3"><dt className="text-slate-400">عدد المنتجات</dt><dd className="font-bold text-ink dark:text-white">{order.product_count}</dd></div>}
+              {order.style && <div className="flex justify-between gap-3"><dt className="text-slate-400">الستايل المطلوب</dt><dd className="font-bold text-ink dark:text-white">{order.style}</dd></div>}
               {order.coupon_code && <div className="flex justify-between gap-3"><dt className="text-slate-400">الكوبون</dt><dd className="font-bold text-ink dark:text-white" dir="ltr">{order.coupon_code}</dd></div>}
               <div className="flex justify-between gap-3"><dt className="text-slate-400">المجموع الفرعي</dt><dd className="font-bold text-ink dark:text-white">{formatPrice(order.subtotal)}</dd></div>
               {order.discount > 0 && <div className="flex justify-between gap-3"><dt className="text-slate-400">الخصم</dt><dd className="font-bold text-emerald-600">− {formatPrice(order.discount)}</dd></div>}
@@ -122,6 +124,20 @@ export default function AdminOrderDetailPage() {
               <p className="mt-4 rounded-2xl bg-mist p-4 text-sm text-slate-400 dark:bg-white/10">العميل مرفعش صورة إيصال.</p>
             )}
           </div>
+
+          {order.product_photos_signed_urls && order.product_photos_signed_urls.length > 0 && (
+            <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <h2 className="text-lg font-extrabold text-ink dark:text-white">صور المنتجات ({order.product_photos_signed_urls.length})</h2>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {order.product_photos_signed_urls.map((url, i) => (
+                  <a key={url} href={url} target="_blank" rel="noopener noreferrer" aria-label={`صورة منتج ${i + 1}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={`صورة منتج ${i + 1}`} className="aspect-square w-full rounded-xl border border-slate-100 object-cover dark:border-white/10" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
             <h2 className="text-lg font-extrabold text-ink dark:text-white">إدارة الطلب</h2>

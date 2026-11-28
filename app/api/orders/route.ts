@@ -40,6 +40,9 @@ export async function POST(req: Request) {
     email: form.get("email"),
     business_name: form.get("business_name"),
     notes: form.get("notes"),
+    product_count: form.get("product_count"),
+    style: form.get("style"),
+    product_photo_paths: form.get("product_photo_paths"),
     payment_method: form.get("payment_method"),
     coupon_code: form.get("coupon_code"),
     website: form.get("website"),
@@ -98,6 +101,50 @@ export async function POST(req: Request) {
   }
   const total = Math.max(0, unitPrice - discount);
 
+  // حقول إضافية للمنتج — بتتأكد على السيرفر من details بتاع المنتج نفسه،
+  // مش من اللي المتصفح بعته. لو المنتج مش طالب الحقول دي، أي قيمة جاية
+  // بتتجاهل — فالعميل مش هيقدر يفرض حقول على منتج تاني.
+  const orderExtras = (
+    product.details as {
+      order?: { product_count?: boolean; styles?: string[]; product_photos?: boolean };
+    } | null
+  )?.order;
+  let productCount: number | null = null;
+  if (orderExtras?.product_count) {
+    const n = Number(input.product_count);
+    if (!input.product_count || !Number.isInteger(n) || n < 1 || n > 1000) {
+      return NextResponse.json({ error: "من فضلك اكتب عدد المنتجات (رقم من 1 لـ 1000)" }, { status: 400 });
+    }
+    productCount = n;
+  }
+  let style: string | null = null;
+  if (orderExtras?.styles?.length) {
+    if (!input.style || !orderExtras.styles.includes(input.style)) {
+      return NextResponse.json({ error: "من فضلك اختار الستايل المطلوب" }, { status: 400 });
+    }
+    style = input.style;
+  }
+  let productPhotos: string[] = [];
+  if (orderExtras?.product_photos && input.product_photo_paths) {
+    let parsedPaths: unknown;
+    try {
+      parsedPaths = JSON.parse(input.product_photo_paths);
+    } catch {
+      return NextResponse.json({ error: "صور المنتجات غير صالحة — ارفعها تاني" }, { status: 400 });
+    }
+    // المسار لازم يكون بالشكل اللي روت upload-url بيصدره بالظبط —
+    // أي مسار تاني (زي إيصال طلب تاني) بيترفض.
+    const pathRe = /^product-photos\/[0-9a-f-]+\/[0-9]+-[0-9a-f]+\.(jpg|jpeg|png|webp|gif)$/i;
+    if (
+      !Array.isArray(parsedPaths) ||
+      parsedPaths.length > 30 ||
+      parsedPaths.some((p) => typeof p !== "string" || !pathRe.test(p))
+    ) {
+      return NextResponse.json({ error: "صور المنتجات غير صالحة — ارفعها تاني" }, { status: 400 });
+    }
+    productPhotos = parsedPaths as string[];
+  }
+
   // رفع صورة الإيصال (اختياري) لباكت receipts الخاص
   // التحقق على السيرفر: امتداد + MIME + magic bytes (M-3) — مش بنثق في
   // file.type اللي المتصفح بيبعته، ولا في الامتداد اللي في اسم الملف.
@@ -138,6 +185,9 @@ export async function POST(req: Request) {
       email: input.email || null,
       business_name: input.business_name || null,
       notes: input.notes || null,
+      product_count: productCount,
+      style,
+      product_photos: productPhotos,
       payment_method: input.payment_method,
       coupon_code: couponCode,
       subtotal: unitPrice,

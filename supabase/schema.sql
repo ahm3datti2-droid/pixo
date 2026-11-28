@@ -30,6 +30,8 @@ create table if not exists products (
   download_file_path text,
   is_active boolean not null default true,
   is_featured boolean not null default false,
+  is_new boolean not null default false,
+  details jsonb,
   sort_order int not null default 0,
   created_at timestamptz not null default now()
 );
@@ -65,6 +67,9 @@ create table if not exists orders (
   email text,
   business_name text,
   notes text,
+  product_count int,
+  style text,
+  product_photos jsonb not null default '[]'::jsonb,
   payment_method text not null check (payment_method in ('instapay', 'vodafone_cash')),
   coupon_code text,
   subtotal numeric(10, 2) not null,

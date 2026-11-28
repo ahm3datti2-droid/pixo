@@ -21,6 +21,11 @@ export default function ProductCard({ product }: { product: Product }) {
             خصم {discount}%
           </span>
         )}
+        {product.is_new && (
+          <span className="absolute left-3 top-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow">
+            جديد
+          </span>
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">

@@ -15,7 +15,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const { data: signed } = await guard.admin.storage.from("receipts").createSignedUrl(data.receipt_url, 60 * 60);
     receipt_signed_url = signed?.signedUrl ?? null;
   }
-  return NextResponse.json({ order: { ...data, receipt_signed_url } });
+  // صور المنتجات — روابط موقّعة (ساعة) لنفس الباكت الخاص
+  let product_photos_signed_urls: string[] = [];
+  const photoPaths = Array.isArray(data.product_photos) ? (data.product_photos as string[]) : [];
+  if (photoPaths.length > 0) {
+    const signed = await Promise.all(
+      photoPaths.map(async (p) => {
+        const { data: s } = await guard.admin.storage.from("receipts").createSignedUrl(p, 60 * 60);
+        return s?.signedUrl ?? null;
+      })
+    );
+    product_photos_signed_urls = signed.filter((u): u is string => Boolean(u));
+  }
+  return NextResponse.json({ order: { ...data, receipt_signed_url, product_photos_signed_urls } });
 }
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -39,10 +51,13 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   const guard = await adminGuard(req);
   if (guard instanceof NextResponse) return guard;
   const { id } = await params;
-  const { data: order } = await guard.admin.from("orders").select("id, receipt_url").eq("id", id).maybeSingle();
+  const { data: order } = await guard.admin.from("orders").select("id, receipt_url, product_photos").eq("id", id).maybeSingle();
   if (!order) return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
-  if (order.receipt_url) {
-    await guard.admin.storage.from("receipts").remove([order.receipt_url as string]);
+  const toRemove: string[] = [];
+  if (order.receipt_url) toRemove.push(order.receipt_url as string);
+  if (Array.isArray(order.product_photos)) toRemove.push(...(order.product_photos as string[]));
+  if (toRemove.length > 0) {
+    await guard.admin.storage.from("receipts").remove(toRemove);
   }
   const { error } = await guard.admin.from("orders").delete().eq("id", id);
   if (error) return NextResponse.json({ error: "تعذر حذف الطلب" }, { status: 500 });

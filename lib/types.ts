@@ -26,6 +26,28 @@ export interface ProductImage {
   sort_order: number;
 }
 
+/**
+ * محتوى إضافي اختياري لصفحة المنتج (JSONB في جدول products).
+ * بيتعرض بس لو موجود — المنتجات القديمة من غيره بتشتغل زي ما هي.
+ */
+export interface ProductDetailsContent {
+  /** خطوات «إزاي بتشتغل؟» */
+  steps?: { title: string; items: string[] };
+  /** صندوق نصايح «عشان تطلع أحسن نتيجة» */
+  tips?: { title: string; items: string[] };
+  /** أسئلة شائعة خاصة بالمنتج ده (بتتضاف للأسئلة العامة) */
+  faq?: { q: string; a: string }[];
+  /** حقول إضافية في فورم الطلب للمنتج ده */
+  order?: {
+    /** يظهر حقل «عدد المنتجات» (رقم إجباري) */
+    product_count?: boolean;
+    /** يظهر حقل «الستايل المطلوب» (قائمة الاختيارات دي) */
+    styles?: string[];
+    /** يظهر حقل رفع صور المنتجات (حتى 30 صورة) */
+    product_photos?: boolean;
+  };
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -43,6 +65,8 @@ export interface Product {
   download_file_path: string | null;
   is_active: boolean;
   is_featured: boolean;
+  is_new: boolean;
+  details: ProductDetailsContent | null;
   sort_order: number;
   created_at: string;
   images: ProductImage[];
@@ -62,6 +86,9 @@ export interface Order {
   email: string | null;
   business_name: string | null;
   notes: string | null;
+  product_count: number | null;
+  style: string | null;
+  product_photos: string[] | null;
   payment_method: PaymentMethod;
   coupon_code: string | null;
   subtotal: number;

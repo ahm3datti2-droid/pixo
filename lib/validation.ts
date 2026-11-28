@@ -10,6 +10,9 @@ export const orderSchema = z.object({
   email: z.string().email("الإيميل غير صحيح").optional().nullable().or(z.literal("")),
   business_name: z.string().max(100).optional().nullable().or(z.literal("")),
   notes: z.string().max(500).optional().nullable().or(z.literal("")),
+  product_count: z.string().max(10).optional().nullable().or(z.literal("")),
+  style: z.string().max(50).optional().nullable().or(z.literal("")),
+  product_photo_paths: z.string().max(10000).optional().nullable().or(z.literal("")),
   payment_method: z.enum(["instapay", "vodafone_cash"]),
   coupon_code: z.string().max(50).optional().nullable().or(z.literal("")),
   website: z.string().optional().nullable(), // honeypot — لازم يفضل فاضي

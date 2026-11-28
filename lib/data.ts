@@ -1,5 +1,5 @@
 import { getPublicClient } from "./supabase";
-import type { Category, PortfolioItem, Product, Testimonial } from "./types";
+import type { Category, PortfolioItem, Product, ProductDetailsContent, Testimonial } from "./types";
 
 /* ------------------------------------------------------------------ */
 /* البيانات الافتراضية: الموقع بيشتغل بيها لما Supabase مش متصل،      */
@@ -26,6 +26,8 @@ function baseProduct(p: Partial<Product> & Pick<Product, "id" | "name" | "slug" 
     download_file_path: null,
     is_active: true,
     is_featured: false,
+    is_new: false,
+    details: null,
     sort_order: 1,
     created_at: "2026-11-26T00:00:00.000Z",
     images: [],
@@ -193,6 +195,75 @@ export const FALLBACK_PRODUCTS: Product[] = [
       "تعديل واحد مجاني بعد المعاينة",
       "تسليم خلال 5 أيام عمل",
     ],
+  }),
+  baseProduct({
+    id: "prod-ai-product-photos",
+    images: [{ id: "img-prod-ai-product-photos", product_id: "prod-ai-product-photos", url: "/images/products/ai-product-photos.svg", sort_order: 1 }],
+    name: "صور منتجات احترافية بالذكاء الاصطناعي",
+    slug: "صور-منتجات-احترافية-بالذكاء-الاصطناعي",
+    category_id: "cat-design",
+    category_name: "تصميم وموشن جرافيك",
+    delivery_type: "service",
+    price: 350,
+    delivery_time: "24 لـ 48 ساعة من استلام الصور",
+    is_featured: true,
+    is_new: true,
+    sort_order: 5,
+    short_description: "صوّر منتجك بموبايلك على أي خلفية.. ونرجعهولك صورة ستوديو احترافية جاهزة للبيع.",
+    description:
+      "مش محتاج مصوّر ولا ستوديو. صوّر منتجك بموبايلك، وإحنا نحوّله لصور احترافية بخلفيات ستوديو أو مشاهد إعلانية، جاهزة لصفحتك ومتجرك وإعلاناتك.",
+    features: [
+      "خلفية ستوديو نضيفة أو مشهد إعلاني حسب اختيارك",
+      "تحسين الإضاءة والألوان",
+      "مقاسات جاهزة للبوست والستوري والمتجر",
+      "تعديل واحد مجاني على كل صورة",
+    ],
+    packages: [
+      {
+        id: "pkg-ai-photos-5",
+        product_id: "prod-ai-product-photos",
+        name: "باقة 5 صور",
+        price: 350,
+        features: [],
+        sort_order: 1,
+      },
+      {
+        id: "pkg-ai-photos-15",
+        product_id: "prod-ai-product-photos",
+        name: "باقة 15 صورة",
+        price: 900,
+        features: [],
+        sort_order: 2,
+      },
+      {
+        id: "pkg-ai-photos-30",
+        product_id: "prod-ai-product-photos",
+        name: "باقة 30 صورة",
+        price: 1600,
+        features: [],
+        sort_order: 3,
+      },
+    ],
+    details: {
+      steps: {
+        title: "إزاي بتشتغل؟",
+        items: ["اختار الباقة وادفع", "ابعتلنا صور منتجاتك من الموبايل", "استلم صورك الاحترافية خلال 48 ساعة"],
+      },
+      tips: {
+        title: "عشان تطلع أحسن نتيجة",
+        items: ["صوّر في مكان فيه إضاءة كويسة", "خلّي المنتج واضح وكامل في الصورة", "صوّر من أكتر من زاوية"],
+      },
+      faq: [
+        { q: "لازم الصورة تكون احترافية؟", a: "لأ خالص، أي صورة واضحة من الموبايل كفاية." },
+        { q: "ينفع أختار شكل الخلفية؟", a: "أيوه، اكتبلنا الستايل اللي تحبه أو ابعت صورة مثال." },
+        { q: "ينفع للملابس والأكل؟", a: "أيوه، لأغلب المنتجات. ولو منتجك محتاج حاجة خاصة هنقولك قبل ما تدفع." },
+      ],
+      order: {
+        product_count: true,
+        styles: ["خلفية بيضاء ستوديو", "خلفية ملونة", "مشهد إعلاني", "سيبوها علينا"],
+        product_photos: true,
+      },
+    },
   }),
   baseProduct({
     id: "prod-marketing-basic",
@@ -424,6 +495,8 @@ function mapProduct(row: DbProductRow): Product {
     download_file_path: row.download_file_path ? String(row.download_file_path) : null,
     is_active: Boolean(row.is_active ?? true),
     is_featured: Boolean(row.is_featured ?? false),
+    is_new: Boolean(row.is_new ?? false),
+    details: (row.details as ProductDetailsContent | null) ?? null,
     sort_order: Number(row.sort_order ?? 0),
     created_at: String(row.created_at ?? ""),
     images,
