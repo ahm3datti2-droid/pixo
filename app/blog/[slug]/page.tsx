@@ -52,7 +52,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {/* تهريب < في JSON-LD (L-1) — نفس سبب صفحة المنتج. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <Link href="/blog" className="font-bold text-primary hover:underline dark:text-accent">
         → كل المقالات
       </Link>

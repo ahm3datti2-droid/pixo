@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase-admin";
 import { contactSchema } from "@/lib/validation";
+import { rateLimitResponse } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,10 @@ export async function POST(req: Request) {
   if (!admin) {
     return NextResponse.json({ error: "خدمة الرسائل مش متاحة حالياً — المتجر لسه مش متصل بقاعدة البيانات" }, { status: 503 });
   }
+
+  // حدّ معدل ضد السبام (M-2): 10 رسائل في الدقيقة لنفس الـ IP
+  const limited = rateLimitResponse(req, "contact", 10);
+  if (limited) return limited;
 
   let body: unknown;
   try {

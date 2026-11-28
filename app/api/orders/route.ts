@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase-admin";
 import { checkCoupon, orderSchema } from "@/lib/validation";
 import { nextOrderNumber } from "@/lib/orders";
+import { rateLimitResponse } from "@/lib/rate-limit";
+import { validateUpload, IMAGE_KINDS } from "@/lib/file-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +19,10 @@ export async function POST(req: Request) {
       { status: 503 }
     );
   }
+
+  // حدّ معدل ضد السبام (M-2): 10 طلبات في الدقيقة لنفس الـ IP
+  const limited = rateLimitResponse(req, "orders", 10);
+  if (limited) return limited;
 
   let form: FormData;
   try {
@@ -82,28 +88,32 @@ export async function POST(req: Request) {
   // الكوبون — تحقق وحساب على السيرفر
   let discount = 0;
   let couponCode: string | null = null;
+  let couponId: string | null = null;
   if (input.coupon_code) {
     const check = await checkCoupon(admin, input.coupon_code, unitPrice);
     if (!check.valid) return NextResponse.json({ error: check.error ?? "الكوبون غير صالح" }, { status: 400 });
     discount = check.discount;
     couponCode = check.code ?? input.coupon_code.toUpperCase();
+    couponId = check.couponId ?? null;
   }
   const total = Math.max(0, unitPrice - discount);
 
   // رفع صورة الإيصال (اختياري) لباكت receipts الخاص
+  // التحقق على السيرفر: امتداد + MIME + magic bytes (M-3) — مش بنثق في
+  // file.type اللي المتصفح بيبعته، ولا في الامتداد اللي في اسم الملف.
   let receiptUrl: string | null = null;
   const receipt = form.get("receipt");
   if (receipt instanceof File && receipt.size > 0) {
     if (receipt.size > 5 * 1024 * 1024) {
       return NextResponse.json({ error: "صورة الإيصال أكبر من 5 ميجا" }, { status: 400 });
     }
-    if (!receipt.type.startsWith("image/")) {
-      return NextResponse.json({ error: "الإيصال لازم يكون صورة" }, { status: 400 });
+    const checked = await validateUpload(receipt, IMAGE_KINDS);
+    if (!checked.ok) {
+      return NextResponse.json({ error: checked.error }, { status: 400 });
     }
-    const ext = receipt.name.split(".").pop()?.toLowerCase() || "jpg";
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${checked.ext}`;
     const { error: uploadError } = await admin.storage.from("receipts").upload(path, receipt, {
-      contentType: receipt.type,
+      contentType: checked.mime,
       upsert: false,
     });
     if (uploadError) {
@@ -136,16 +146,33 @@ export async function POST(req: Request) {
       receipt_url: receiptUrl,
       status: "pending",
     })
-    .select("order_number, total, product_name")
+    .select("id, order_number, total, product_name")
     .single();
 
   if (insertError || !order) {
     return NextResponse.json({ error: "تعذر حفظ الطلب — حاول تاني" }, { status: 500 });
   }
 
-  if (couponCode) {
-    const { data: c } = await admin.from("coupons").select("id, uses_count").ilike("code", couponCode).maybeSingle();
-    if (c) await admin.from("coupons").update({ uses_count: Number(c.uses_count ?? 0) + 1 }).eq("id", c.id);
+  // زيادة عدّاد الكوبون ذرّياً (M-4): دالة SQL واحدة بتزود uses_count
+  // بشرط إنه لسه تحت الحد الأقصى — طلبان متزامنان مش هيتجاوزوا max_uses.
+  // لو الزيادة فشلت (الكوبون خلص في نفس اللحظة بطلب تاني)، بنمسح الطلب
+  // اللي اتعمل ونرجّع خطأ — أحسن من خصم اتطبّق من غير ما يتعدّ.
+  if (couponCode && couponId) {
+    const { data: applied, error: rpcError } = await admin.rpc("apply_coupon", { p_coupon_id: couponId });
+    if (!rpcError) {
+      if (applied !== true) {
+        await admin.from("orders").delete().eq("id", order.id);
+        return NextResponse.json(
+          { error: "الكوبون ده وصل للحد الأقصى من الاستخدام — جرّب من غير كوبون" },
+          { status: 400 }
+        );
+      }
+    } else {
+      // احتياطي لو الدالة لسه مش موجودة (قبل تطبيق الـ migration):
+      // نفس المنطق القديم — صحيح بس مش آمن ضد التزامن.
+      const { data: c } = await admin.from("coupons").select("id, uses_count").ilike("code", couponCode).maybeSingle();
+      if (c) await admin.from("coupons").update({ uses_count: Number(c.uses_count ?? 0) + 1 }).eq("id", c.id);
+    }
   }
 
   return NextResponse.json({

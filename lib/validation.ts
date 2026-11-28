@@ -38,6 +38,8 @@ export interface CouponCheck {
   discount: number;
   total: number;
   code?: string;
+  /** id الكوبون — عشان الزيادة الذرّية بعد إنشاء الطلب (M-4) */
+  couponId?: string;
   error?: string;
 }
 
@@ -64,5 +66,11 @@ export async function checkCoupon(
     data.discount_type === "percent"
       ? Math.round((amount * Number(data.discount_value)) / 100)
       : Math.min(Number(data.discount_value), amount);
-  return { valid: true, discount, total: Math.max(0, amount - discount), code: String(data.code) };
+  return {
+    valid: true,
+    discount,
+    total: Math.max(0, amount - discount),
+    code: String(data.code),
+    couponId: String(data.id),
+  };
 }

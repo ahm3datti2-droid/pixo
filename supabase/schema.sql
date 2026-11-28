@@ -176,11 +176,53 @@ create policy "public read testimonials" on testimonials
 create policy "public read settings" on settings
   for select to anon, authenticated using (true);
 
--- الزوار يقدروا يبعتوا طلبات ورسائل بس (إدخال فقط، ومفيش قراءة لطلبات الغير)
-create policy "public insert orders" on orders
-  for insert to anon, authenticated with check (status = 'pending');
-create policy "public insert messages" on messages
-  for insert to anon, authenticated with check (true);
+-- الكتابة: لا توجد أي سياسة إدخال عام — الطلبات والرسائل تُكتب عبر
+-- /api/orders و/api/contact بمفتاح Service Role من السيرفر فقط.
+-- (حُذفت سياستا "public insert orders/messages" في 2026-11-28 — كانتا
+-- تسمحان لأي شخص بالمفتاح العام بإدخال طلبات/رسائل مباشرة عبر PostgREST
+-- متجاوزاً تحقق zod والـ honeypot، والتطبيق أصلاً لا يستخدمهما.)
+
+-- ---------- أرقام الطلبات والكوبونات الذرّية (M-4) ----------
+-- sequence لرقم الطلب: طلبان متزامنان مش هياخدوا نفس الرقم أبداً.
+create sequence if not exists order_number_seq;
+
+-- ظبط الـ sequence على آخر رقم طلب موجود (مرة واحدة بس — لو اتستخدم قبل كده منسيبوش يرجع ورا).
+-- في إعداد جديد (مفيش طلبات) بيبدأ من 10023.
+do $$
+declare
+  v_max integer;
+  v_called boolean;
+begin
+  select coalesce(max(cast(regexp_replace(order_number, '\D', '', 'g') as integer)), 10022)
+    into v_max from orders;
+  select is_called into v_called from order_number_seq;
+  if not coalesce(v_called, false) then
+    perform setval('order_number_seq', v_max, true);
+  end if;
+end $$;
+
+create or replace function public.next_order_number()
+returns integer language sql as $$
+  select nextval('order_number_seq');
+$$;
+revoke execute on function public.next_order_number() from public;
+grant execute on function public.next_order_number() to service_role;
+
+-- زيادة عدّاد الكوبون ذرّياً وبشرط الحد الأقصى — بترجع false لو الكوبون خلص.
+create or replace function public.apply_coupon(p_coupon_id uuid)
+returns boolean language plpgsql as $$
+declare applied boolean := false;
+begin
+  update coupons
+     set uses_count = coalesce(uses_count, 0) + 1
+   where id = p_coupon_id
+     and (max_uses is null or coalesce(uses_count, 0) < max_uses)
+  returning true into applied;
+  return coalesce(applied, false);
+end;
+$$;
+revoke execute on function public.apply_coupon(uuid) from public;
+grant execute on function public.apply_coupon(uuid) to service_role;
 
 -- الأدمن: لا توجد أي سياسة وصول مباشر للمستخدمين المسجَّلين.
 -- (حُذفت سياسات "admin all *" في 2026-11-28 — كانت `for all to authenticated

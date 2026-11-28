@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase-admin";
 import { checkCoupon, couponValidateSchema } from "@/lib/validation";
+import { rateLimitResponse } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,10 @@ export async function POST(req: Request) {
   if (!admin) {
     return NextResponse.json({ error: "خدمة الكوبونات مش متاحة حالياً" }, { status: 503 });
   }
+
+  // حدّ معدل ضد تخمين الأكواد (M-2): 5 محاولات في الدقيقة لنفس الـ IP
+  const limited = rateLimitResponse(req, "coupon", 5);
+  if (limited) return limited;
 
   let body: unknown;
   try {

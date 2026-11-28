@@ -1,14 +1,25 @@
 import { NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase-admin";
+import { rateLimitResponse } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
-/** رابط تحميل آمن: بيتحقق من رقم الطلب + الموبايل + الحالة، وبيرجع Signed URL صالح 24 ساعة */
+/**
+ * رابط تحميل آمن: بيتحقق من رقم الطلب + الموبايل + الحالة، وبيرجع Signed URL صالح 24 ساعة.
+ * رسالة الخطأ موحّدة للطلب غير الموجود والموبايل الغلط (M-2 + L-2) —
+ * الفرق بين 404 و403 كان بيسرّب وجود الطلب نفسه.
+ */
+const NOT_FOUND = "الطلب غير موجود أو بياناته مش مطابقة — اتأكد من رقم الطلب والموبايل";
+
 export async function GET(req: Request) {
   const admin = getAdminClient();
   if (!admin) {
     return NextResponse.json({ error: "خدمة التحميل مش متاحة حالياً" }, { status: 503 });
   }
+
+  // حدّ معدل: 10 محاولات في الدقيقة لنفس الـ IP
+  const limited = rateLimitResponse(req, "download", 10);
+  if (limited) return limited;
 
   const url = new URL(req.url);
   const orderNumber = (url.searchParams.get("order") || "").trim().toUpperCase();
@@ -23,12 +34,12 @@ export async function GET(req: Request) {
     .eq("order_number", orderNumber)
     .maybeSingle();
   if (error || !order) {
-    return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
+    return NextResponse.json({ error: NOT_FOUND }, { status: 404 });
   }
 
   const digits = (s: string) => s.replace(/\D/g, "").slice(-10);
   if (digits(String(order.phone)) !== digits(phone)) {
-    return NextResponse.json({ error: "رقم الموبايل مش مطابق لرقم الطلب ده" }, { status: 403 });
+    return NextResponse.json({ error: NOT_FOUND }, { status: 404 });
   }
   if (order.status !== "paid" && order.status !== "delivered") {
     return NextResponse.json({ error: "الملف هيكون متاح للتحميل بعد تأكيد الدفع" }, { status: 403 });

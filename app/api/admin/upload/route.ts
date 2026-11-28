@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminGuard } from "@/lib/admin-api";
+import { validateUpload, IMAGE_KINDS, DOWNLOAD_KINDS } from "@/lib/file-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,8 @@ export const dynamic = "force-dynamic";
  * - bucket=public-images → بيرجع رابط عام (صور المنتجات والأعمال)
  * - bucket=downloads → بيرجع مسار الملف الخاص (ملف التحميل للمنتج)
  * الحد الأقصى: 10 ميجا للصور، 50 ميجا للملفات القابلة للتحميل.
+ * قائمة سماح صارمة (M-3): امتداد + MIME + magic bytes — SVG وHTML وJS
+ * مرفوضين تماماً، فمفيش ملف فيه سكربت يوصل للباكت العام.
  */
 export async function POST(req: Request) {
   const guard = await adminGuard(req);
@@ -32,10 +35,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `الملف أكبر من الحد المسموح (${bucket === "downloads" ? "50" : "10"} ميجا)` }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  // التحقق من النوع والمحتوى الفعلي قبل الرفع
+  const allowed = bucket === "public-images" ? IMAGE_KINDS : DOWNLOAD_KINDS;
+  const checked = await validateUpload(file, allowed);
+  if (!checked.ok) {
+    return NextResponse.json({ error: checked.error }, { status: 400 });
+  }
+
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${checked.ext}`;
   const { error } = await guard.admin.storage.from(bucket).upload(path, file, {
-    contentType: file.type || undefined,
+    contentType: checked.mime,
     upsert: false,
   });
   if (error) {

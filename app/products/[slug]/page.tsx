@@ -59,7 +59,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         event="ViewContent"
         params={{ content_ids: [product.slug], content_name: product.name, content_type: "product", value: product.price, currency: "EGP" }}
       />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {/* تهريب < في JSON-LD (L-1): اسم/وصف المنتج جايين من قاعدة البيانات،
+          وJSON.stringify لوحده مش بيهرّب </script> — من غير التهريب ده اسم
+          منتج خبيث كان ممكن يكسر وسم السكربت وينفّذ كود. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <ProductDetails product={product} related={related} whatsappNumber={settings.whatsapp_number} />
     </div>
   );
