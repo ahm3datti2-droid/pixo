@@ -182,28 +182,12 @@ create policy "public insert orders" on orders
 create policy "public insert messages" on messages
   for insert to anon, authenticated with check (true);
 
--- الأدمن (أي مستخدم مسجّل دخول): صلاحيات كاملة على كل الجداول.
--- الوصول للوحة الأدمن نفسها محكوم بـ ADMIN_EMAILS في التطبيق (app/api/admin/*).
-create policy "admin all categories" on categories
-  for all to authenticated using (true) with check (true);
-create policy "admin all products" on products
-  for all to authenticated using (true) with check (true);
-create policy "admin all product images" on product_images
-  for all to authenticated using (true) with check (true);
-create policy "admin all packages" on packages
-  for all to authenticated using (true) with check (true);
-create policy "admin all orders" on orders
-  for all to authenticated using (true) with check (true);
-create policy "admin all coupons" on coupons
-  for all to authenticated using (true) with check (true);
-create policy "admin all portfolio" on portfolio
-  for all to authenticated using (true) with check (true);
-create policy "admin all testimonials" on testimonials
-  for all to authenticated using (true) with check (true);
-create policy "admin all messages" on messages
-  for all to authenticated using (true) with check (true);
-create policy "admin all settings" on settings
-  for all to authenticated using (true) with check (true);
+-- الأدمن: لا توجد أي سياسة وصول مباشر للمستخدمين المسجَّلين.
+-- (حُذفت سياسات "admin all *" في 2026-11-28 — كانت `for all to authenticated
+-- using (true)` فتمنح أي حساب مسجَّل دخول صلاحيات كاملة على كل الجداول،
+-- متجاوزةً فحص ADMIN_EMAILS في التطبيق. كل الوصول للأدمن يمر عبر روابط
+-- /api/admin/* بمفتاح Service Role من السيرفر، الذي يتجاوز RLS أصلاً.
+-- المتصفح يستخدم عميل Supabase للمصادقة فقط (تسجيل دخول/جلسة).)
 
 -- ---------- Storage Buckets ----------
 
@@ -214,15 +198,12 @@ values
   ('downloads', 'downloads', false)
 on conflict (id) do nothing;
 
--- صور عامة: أي حد يقدر يشوفها، والمسجّلين بس يقدروا يرفعوا/يمسحوا
+-- صور عامة: أي حد يقدر يشوفها. الرفع/الحذف يتم من السيرفر فقط
+-- عبر /api/admin/upload بمفتاح Service Role — لا توجد سياسة وصول
+-- مباشر للمستخدمين المسجَّلين (حُذفت "admin manage *" في 2026-11-28).
 create policy "public read public-images" on storage.objects
   for select to anon, authenticated using (bucket_id = 'public-images');
-create policy "admin manage public-images" on storage.objects
-  for all to authenticated using (bucket_id = 'public-images') with check (bucket_id = 'public-images');
 
 -- الإيصالات والملفات: خاصة تماماً — مفيش وصول عام،
 -- والتحميل بيتم من السيرفر بـ Service Role Key وروابط موقعة مؤقتة.
-create policy "admin manage receipts" on storage.objects
-  for all to authenticated using (bucket_id = 'receipts') with check (bucket_id = 'receipts');
-create policy "admin manage downloads" on storage.objects
-  for all to authenticated using (bucket_id = 'downloads') with check (bucket_id = 'downloads');
+-- (لا توجد أي سياسة على هذين الباكتين — الوصول كله من السيرفر فقط.)
