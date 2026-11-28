@@ -37,6 +37,12 @@ export interface ProductDetailsContent {
   tips?: { title: string; items: string[] };
   /** أسئلة شائعة خاصة بالمنتج ده (بتتضاف للأسئلة العامة) */
   faq?: { q: string; a: string }[];
+  /** «الباقة فيها إيه؟» — عناصر بعنوان ووصف (بتحل محل كارت «هتاخد إيه بالظبط؟») */
+  included?: { title: string; items: { title: string; desc: string }[] };
+  /** ملاحظة صغيرة تحت قسم «الباقة فيها إيه؟» */
+  note?: string;
+  /** رسالة مخصصة بتظهر في شاشة نجاح الطلب بدل/بعد النص العام */
+  success_message?: string;
   /** حقول إضافية في فورم الطلب للمنتج ده */
   order?: {
     /** يظهر حقل «عدد المنتجات» (رقم إجباري) */
@@ -45,6 +51,10 @@ export interface ProductDetailsContent {
     styles?: string[];
     /** يظهر حقل رفع صور المنتجات (حتى 30 صورة) */
     product_photos?: boolean;
+    /** يخلي حقل «اسم البيزنس» الأساسي إجباري للمنتج ده */
+    require_business_name?: boolean;
+    /** حقول نصية عامة (بتتخزن في orders.extra_fields) */
+    fields?: { key: string; label: string; type?: "text" | "tel" | "url"; required?: boolean; placeholder?: string }[];
   };
 }
 
@@ -66,6 +76,10 @@ export interface Product {
   is_active: boolean;
   is_featured: boolean;
   is_new: boolean;
+  /** شارة نصية مخصصة على الكارت (زي «تسليم سريع») — غير «جديد» */
+  badge: string | null;
+  /** كارت مميز بحدّ ملوّن (accent border) */
+  highlighted: boolean;
   details: ProductDetailsContent | null;
   sort_order: number;
   created_at: string;
@@ -89,6 +103,8 @@ export interface Order {
   product_count: number | null;
   style: string | null;
   product_photos: string[] | null;
+  /** حقول الطلب العامة للمنتج (من details.order.fields) — {key: value} */
+  extra_fields: Record<string, string> | null;
   payment_method: PaymentMethod;
   coupon_code: string | null;
   subtotal: number;

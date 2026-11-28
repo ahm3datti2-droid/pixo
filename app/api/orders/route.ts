@@ -43,6 +43,7 @@ export async function POST(req: Request) {
     product_count: form.get("product_count"),
     style: form.get("style"),
     product_photo_paths: form.get("product_photo_paths"),
+    extra_fields: form.get("extra_fields"),
     payment_method: form.get("payment_method"),
     coupon_code: form.get("coupon_code"),
     website: form.get("website"),
@@ -106,9 +107,50 @@ export async function POST(req: Request) {
   // بتتجاهل — فالعميل مش هيقدر يفرض حقول على منتج تاني.
   const orderExtras = (
     product.details as {
-      order?: { product_count?: boolean; styles?: string[]; product_photos?: boolean };
+      order?: {
+        product_count?: boolean;
+        styles?: string[];
+        product_photos?: boolean;
+        require_business_name?: boolean;
+        fields?: { key: string; label: string; type?: "text" | "tel" | "url"; required?: boolean }[];
+      };
     } | null
   )?.order;
+  // اسم البيزنس إجباري لبعض المنتجات (زي باقة «بيزنسك أونلاين في 48 ساعة»)
+  if (orderExtras?.require_business_name && !input.business_name?.trim()) {
+    return NextResponse.json({ error: "من فضلك اكتب اسم البيزنس" }, { status: 400 });
+  }
+  // حقول الطلب العامة — بتتأكد من تعريف المنتج نفسه، وأي مفتاح مش معرّف بيتجاهل
+  let extraFields: Record<string, string> = {};
+  if (orderExtras?.fields?.length) {
+    let parsedExtra: unknown = {};
+    if (input.extra_fields) {
+      try {
+        parsedExtra = JSON.parse(input.extra_fields);
+      } catch {
+        return NextResponse.json({ error: "بيانات الطلب مش صحيحة — راجع البيانات وحاول تاني" }, { status: 400 });
+      }
+    }
+    if (typeof parsedExtra !== "object" || parsedExtra === null || Array.isArray(parsedExtra)) {
+      return NextResponse.json({ error: "بيانات الطلب مش صحيحة — راجع البيانات وحاول تاني" }, { status: 400 });
+    }
+    const extraObj = parsedExtra as Record<string, unknown>;
+    for (const f of orderExtras.fields) {
+      const v = typeof extraObj[f.key] === "string" ? (extraObj[f.key] as string).trim() : "";
+      if (f.required && !v) {
+        return NextResponse.json({ error: `من فضلك املأ حقل «${f.label}»` }, { status: 400 });
+      }
+      if (v) {
+        if (v.length > 200) {
+          return NextResponse.json({ error: `«${f.label}» طويل جداً` }, { status: 400 });
+        }
+        if (f.type === "tel" && !/^01[0-9]{9}$/.test(v.replace(/[^0-9]/g, ""))) {
+          return NextResponse.json({ error: `«${f.label}» مش رقم مصري صحيح — لازم يبدأ بـ 01` }, { status: 400 });
+        }
+        extraFields[f.key] = v;
+      }
+    }
+  }
   let productCount: number | null = null;
   if (orderExtras?.product_count) {
     const n = Number(input.product_count);
@@ -188,6 +230,7 @@ export async function POST(req: Request) {
       product_count: productCount,
       style,
       product_photos: productPhotos,
+      extra_fields: extraFields,
       payment_method: input.payment_method,
       coupon_code: couponCode,
       subtotal: unitPrice,

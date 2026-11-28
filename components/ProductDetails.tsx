@@ -74,6 +74,9 @@ export default function ProductDetails({
             {product.is_new && (
               <span className="rounded-full bg-emerald-500 px-3 py-1 font-bold text-white">جديد</span>
             )}
+            {product.badge && (
+              <span className="rounded-full bg-amber-500 px-3 py-1 font-bold text-white">{product.badge}</span>
+            )}
             <span className="rounded-full bg-mist px-3 py-1 font-bold text-slate-600 dark:bg-white/10 dark:text-slate-300">
               {DELIVERY_TYPE_LABELS[product.delivery_type]}
             </span>
@@ -171,19 +174,41 @@ export default function ProductDetails({
         </div>
       </div>
 
-      {/* Features + description */}
+      {/* Features + description — لو المنتج فيه «الباقة فيها إيه؟» بيحل محل كارت المميزات */}
       <div className="mt-12 grid gap-8 lg:grid-cols-2">
-        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-          <h2 className="text-xl font-extrabold text-ink dark:text-white">هتاخد إيه بالظبط؟</h2>
-          <ul className="mt-4 space-y-3">
-            {product.features.map((f) => (
-              <li key={f} className="flex items-start gap-2.5 text-slate-600 dark:text-slate-300">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-600 dark:bg-emerald-500/20">✓</span>
-                <span className="leading-relaxed">{f}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {product.details?.included ? (
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <h2 className="text-xl font-extrabold text-ink dark:text-white">{product.details.included.title}</h2>
+            <ul className="mt-4 space-y-4">
+              {product.details.included.items.map((item) => (
+                <li key={item.title} className="flex items-start gap-2.5 text-slate-600 dark:text-slate-300">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-600 dark:bg-emerald-500/20">✓</span>
+                  <span className="leading-relaxed">
+                    <span className="font-bold text-ink dark:text-white">{item.title}</span>
+                    <span className="block text-sm text-slate-500 dark:text-slate-400">{item.desc}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {product.details.note && (
+              <p className="mt-5 border-t border-slate-100 pt-4 text-sm leading-relaxed text-slate-400 dark:border-white/10">
+                {product.details.note}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <h2 className="text-xl font-extrabold text-ink dark:text-white">هتاخد إيه بالظبط؟</h2>
+            <ul className="mt-4 space-y-3">
+              {product.features.map((f) => (
+                <li key={f} className="flex items-start gap-2.5 text-slate-600 dark:text-slate-300">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-600 dark:bg-emerald-500/20">✓</span>
+                  <span className="leading-relaxed">{f}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
           <h2 className="text-xl font-extrabold text-ink dark:text-white">تفاصيل المنتج</h2>
           {product.description.split("\n").map((para, i) => (

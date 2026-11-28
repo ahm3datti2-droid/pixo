@@ -6,7 +6,11 @@ import { adminFetch } from "@/lib/admin-client";
 import type { Order, OrderStatus } from "@/lib/types";
 import { formatPrice, ORDER_STATUS_LABELS, whatsappLink } from "@/lib/utils";
 
-type OrderDetail = Order & { receipt_signed_url: string | null; product_photos_signed_urls: string[] | null };
+type OrderDetail = Order & {
+  receipt_signed_url: string | null;
+  product_photos_signed_urls: string[] | null;
+  extra_field_labels?: { key: string; label: string }[];
+};
 
 const STATUSES: OrderStatus[] = ["pending", "paid", "in_progress", "delivered", "cancelled"];
 
@@ -106,6 +110,9 @@ export default function AdminOrderDetailPage() {
               {order.package_name && <div className="flex justify-between gap-3"><dt className="text-slate-400">الباقة</dt><dd className="font-bold text-ink dark:text-white">{order.package_name}</dd></div>}
               {order.product_count != null && <div className="flex justify-between gap-3"><dt className="text-slate-400">عدد المنتجات</dt><dd className="font-bold text-ink dark:text-white">{order.product_count}</dd></div>}
               {order.style && <div className="flex justify-between gap-3"><dt className="text-slate-400">الستايل المطلوب</dt><dd className="font-bold text-ink dark:text-white">{order.style}</dd></div>}
+              {order.extra_field_labels?.map((f) => (
+                <div key={f.key} className="flex justify-between gap-3"><dt className="text-slate-400">{f.label}</dt><dd className="font-bold text-ink dark:text-white" dir={/^[0-9+\s]+$/.test(order.extra_fields?.[f.key] ?? "") || f.key === "social_link" ? "ltr" : undefined}>{order.extra_fields?.[f.key]}</dd></div>
+              ))}
               {order.coupon_code && <div className="flex justify-between gap-3"><dt className="text-slate-400">الكوبون</dt><dd className="font-bold text-ink dark:text-white" dir="ltr">{order.coupon_code}</dd></div>}
               <div className="flex justify-between gap-3"><dt className="text-slate-400">المجموع الفرعي</dt><dd className="font-bold text-ink dark:text-white">{formatPrice(order.subtotal)}</dd></div>
               {order.discount > 0 && <div className="flex justify-between gap-3"><dt className="text-slate-400">الخصم</dt><dd className="font-bold text-emerald-600">− {formatPrice(order.discount)}</dd></div>}

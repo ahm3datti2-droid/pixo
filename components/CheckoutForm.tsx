@@ -37,6 +37,8 @@ export default function CheckoutForm({
   const [style, setStyle] = useState("");
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPaths, setPhotoPaths] = useState<string[]>([]);
+  // حقول الطلب العامة للمنتج (details.order.fields) — {key: value}
+  const [extraValues, setExtraValues] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const [uploadMsg, setUploadMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -159,6 +161,16 @@ export default function CheckoutForm({
     if (orderExtras?.styles?.length) {
       if (!style || !orderExtras.styles.includes(style)) return setError("من فضلك اختار الستايل المطلوب");
     }
+    if (orderExtras?.require_business_name && !businessName.trim())
+      return setError("من فضلك اكتب اسم البيزنس");
+    if (orderExtras?.fields?.length) {
+      for (const f of orderExtras.fields) {
+        const v = (extraValues[f.key] ?? "").trim();
+        if (f.required && !v) return setError(`من فضلك املأ حقل «${f.label}»`);
+        if (v && f.type === "tel" && !isValidEgyptianPhone(v)) return setError(`«${f.label}» مش رقم مصري صحيح — لازم يبدأ بـ 01`);
+        if (v.length > 200) return setError(`«${f.label}» طويل جداً`);
+      }
+    }
 
     setLoading(true);
     try {
@@ -178,6 +190,14 @@ export default function CheckoutForm({
       if (orderExtras?.styles?.length) fd.append("style", style);
       if (orderExtras?.product_photos && photoPaths.length > 0)
         fd.append("product_photo_paths", JSON.stringify(photoPaths));
+      if (orderExtras?.fields?.length) {
+        const cleaned: Record<string, string> = {};
+        for (const f of orderExtras.fields) {
+          const v = (extraValues[f.key] ?? "").trim();
+          if (v) cleaned[f.key] = v;
+        }
+        fd.append("extra_fields", JSON.stringify(cleaned));
+      }
       if (receipt) fd.append("receipt", receipt);
 
       const res = await fetch("/api/orders", { method: "POST", body: fd });
@@ -216,6 +236,11 @@ export default function CheckoutForm({
           <p className="mt-2 flex justify-between text-sm"><span className="text-slate-400">المنتج</span><span className="font-bold text-ink dark:text-white">{success.product_name}</span></p>
           <p className="mt-2 flex justify-between text-sm"><span className="text-slate-400">الإجمالي</span><span className="font-extrabold text-ink dark:text-white">{formatPrice(success.total)}</span></p>
         </div>
+        {product.details?.success_message && (
+          <p className="mx-auto mt-4 max-w-sm rounded-2xl bg-emerald-50 p-4 text-sm font-bold leading-relaxed text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+            {product.details.success_message}
+          </p>
+        )}
         {orderExtras?.product_photos && (
           photoPaths.length > 0 ? (
             <p className="mx-auto mt-4 max-w-sm rounded-2xl bg-emerald-50 p-4 text-sm font-bold text-emerald-700 dark:bg-emerald-500/10">
@@ -274,7 +299,7 @@ export default function CheckoutForm({
               <input id="cf-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="name@email.com" dir="ltr" style={{ textAlign: "right" }} />
             </div>
             <div>
-              <label htmlFor="cf-biz" className={labelCls}>اسم البيزنس (اختياري)</label>
+              <label htmlFor="cf-biz" className={labelCls}>اسم البيزنس {orderExtras?.require_business_name ? "*" : "(اختياري)"}</label>
               <input id="cf-biz" value={businessName} onChange={(e) => setBusinessName(e.target.value)} className={inputCls} placeholder="اسم محلك أو شركتك" />
             </div>
             <div>
@@ -295,7 +320,7 @@ export default function CheckoutForm({
           />
         </div>
 
-        {orderExtras && (orderExtras.product_count || orderExtras.styles?.length || orderExtras.product_photos) && (
+        {orderExtras && (orderExtras.product_count || orderExtras.styles?.length || orderExtras.product_photos || orderExtras.fields?.length) && (
           <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
             <h2 className="text-lg font-extrabold text-ink dark:text-white">تفاصيل الخدمة</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -327,6 +352,21 @@ export default function CheckoutForm({
                   </select>
                 </div>
               ) : null}
+              {orderExtras.fields?.map((f) => (
+                <div key={f.key}>
+                  <label htmlFor={`cf-extra-${f.key}`} className={labelCls}>{f.label}{f.required ? " *" : " (اختياري)"}</label>
+                  <input
+                    id={`cf-extra-${f.key}`}
+                    value={extraValues[f.key] ?? ""}
+                    onChange={(e) => setExtraValues((prev) => ({ ...prev, [f.key]: e.target.value }))}
+                    className={inputCls}
+                    placeholder={f.placeholder ?? ""}
+                    inputMode={f.type === "tel" ? "tel" : undefined}
+                    dir={f.type === "tel" || f.type === "url" ? "ltr" : undefined}
+                    style={f.type === "tel" || f.type === "url" ? { textAlign: "right" } : undefined}
+                  />
+                </div>
+              ))}
             </div>
             {orderExtras.product_photos && (
               <div className="mt-4">

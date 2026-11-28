@@ -31,6 +31,8 @@ create table if not exists products (
   is_active boolean not null default true,
   is_featured boolean not null default false,
   is_new boolean not null default false,
+  badge text,
+  highlighted boolean not null default false,
   details jsonb,
   sort_order int not null default 0,
   created_at timestamptz not null default now()
@@ -70,6 +72,7 @@ create table if not exists orders (
   product_count int,
   style text,
   product_photos jsonb not null default '[]'::jsonb,
+  extra_fields jsonb not null default '{}'::jsonb,
   payment_method text not null check (payment_method in ('instapay', 'vodafone_cash')),
   coupon_code text,
   subtotal numeric(10, 2) not null,

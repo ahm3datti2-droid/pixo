@@ -176,6 +176,22 @@ insert into products (name, slug, category_id, delivery_type, short_description,
 )
 on conflict (slug) do nothing;
 
+-- ---------- باقة «بيزنسك أونلاين في 48 ساعة» ----------
+insert into products (name, slug, category_id, delivery_type, short_description, description, features, price, old_price, delivery_time, is_featured, is_new, badge, highlighted, details, sort_order) values
+(
+  'بيزنسك أونلاين في 48 ساعة',
+  'بيزنسك-أونلاين-في-48-ساعة',
+  (select id from categories where slug = 'أنظمة-ومواقع-جاهزة'),
+  'service',
+  'فاتح بيزنس جديد؟ في 48 ساعة هيبقى ليك لوجو وكارت ديجيتال وواتساب بيزنس متجهز وتسجيل على خرائط جوجل.',
+  'كل اللي محتاجه عشان تبدأ أونلاين صح، في باقة واحدة وبسعر ثابت.. ومن غير ما تستنى أسابيع.',
+  '["لوجو بسيط واحترافي", "كارت بيزنس ديجيتال", "تجهيز واتساب بيزنس", "تسجيل النشاط على خرائط جوجل"]'::jsonb,
+  2500, null, '48 ساعة من استلام البيانات والدفع', true, false, 'تسليم سريع', true,
+  '{"included":{"title":"الباقة فيها إيه؟","items":[{"title":"لوجو بسيط واحترافي","desc":"اقتراحين تختار منهم + تعديلين"},{"title":"كارت بيزنس ديجيتال","desc":"صفحة واحدة فيها كل وسايل التواصل، بتتفتح من لينك أو QR"},{"title":"تجهيز واتساب بيزنس","desc":"بروفايل كامل، كتالوج لحد 20 منتج، ورسايل ترحيب وردود تلقائية"},{"title":"تسجيل النشاط على خرائط جوجل","desc":"عشان الزباين تلاقيك لما تدوّر"}]},"note":"تفعيل خرائط جوجل بيتم حسب خطوات التحقق اللي جوجل بتطلبها، وإحنا بنجهزلك كل حاجة ونساعدك فيها.","steps":{"title":"إزاي بتشتغل؟","items":["اطلب الباقة وادفع","املأ بيانات البيزنس","استلم كل حاجة خلال 48 ساعة"]},"faq":[{"q":"الـ 48 ساعة بتبدأ إمتى؟","a":"من وقت ما نستلم الدفع وكل بيانات البيزنس."},{"q":"لو عندي لوجو بالفعل؟","a":"كلمنا على واتساب ونظبطلك الباقة من غير اللوجو."},{"q":"ينفع أطوّرها بعدين لمتجر كامل؟","a":"أكيد، وبنحسبلك اللي دفعته في الباقة دي من سعر المتجر."}],"order":{"require_business_name":true,"fields":[{"key":"activity_type","label":"نوع النشاط","type":"text","required":true,"placeholder":"مثال: مطعم، صيدلية، محل ملابس"},{"key":"business_whatsapp","label":"رقم واتساب البيزنس","type":"tel","required":true,"placeholder":"01xxxxxxxxx"},{"key":"address","label":"عنوان المحل أو المنطقة","type":"text","required":true,"placeholder":"مثال: شارع الثلاثيني، الإسماعيلية"},{"key":"social_link","label":"لينك صفحة فيسبوك أو إنستجرام","type":"url","required":false,"placeholder":"https://facebook.com/..."},{"key":"favorite_colors","label":"ألوان بتحبها","type":"text","required":false,"placeholder":"مثال: أزرق وذهبي"}]},"success_message":"تم استلام طلبك ✓ العد التنازلي للـ 48 ساعة هيبدأ بعد تأكيد الدفع. لأي استفسار: واتساب 01117543009"}'::jsonb,
+  3
+)
+on conflict (slug) do nothing;
+
 -- ---------- باقات المنتجات ----------
 insert into packages (product_id, name, price, features, sort_order) values
 (
@@ -256,4 +272,6 @@ select id, '/images/products/claude-plus.svg', 1 from products where slug = 'ا�
 union all
 select id, '/images/products/bundle-starter.svg', 1 from products where slug = 'باقة-البداية-الكاملة-متجر-تسويق'
 union all
-select id, '/images/products/ai-product-photos.svg', 1 from products where slug = 'صور-منتجات-احترافية-بالذكاء-الاصطناعي';
+select id, '/images/products/ai-product-photos.svg', 1 from products where slug = 'صور-منتجات-احترافية-بالذكاء-الاصطناعي'
+union all
+select id, '/images/products/express-bundle-48h.svg', 1 from products where slug = 'بيزنسك-أونلاين-في-48-ساعة';

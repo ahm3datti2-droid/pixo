@@ -27,7 +27,24 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     );
     product_photos_signed_urls = signed.filter((u): u is string => Boolean(u));
   }
-  return NextResponse.json({ order: { ...data, receipt_signed_url, product_photos_signed_urls } });
+  // تسميات الحقول العامة للطلب — من تعريف المنتج نفسه (عشان الأدمن يشوفها بأسمائها)
+  let extra_field_labels: { key: string; label: string }[] = [];
+  const extraObj =
+    data.extra_fields && typeof data.extra_fields === "object" && !Array.isArray(data.extra_fields)
+      ? (data.extra_fields as Record<string, unknown>)
+      : {};
+  if (data.product_id && Object.keys(extraObj).length > 0) {
+    const { data: prod } = await guard.admin
+      .from("products")
+      .select("details")
+      .eq("id", data.product_id)
+      .maybeSingle();
+    const fields = (prod?.details as { order?: { fields?: { key: string; label: string }[] } } | null)?.order?.fields;
+    if (Array.isArray(fields)) {
+      extra_field_labels = fields.filter((f) => f.key in extraObj).map((f) => ({ key: f.key, label: f.label }));
+    }
+  }
+  return NextResponse.json({ order: { ...data, receipt_signed_url, product_photos_signed_urls, extra_field_labels } });
 }
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {

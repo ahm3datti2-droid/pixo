@@ -12,7 +12,11 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${encodeURIComponent(product.slug)}`}
-      className="group flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-white/10 dark:bg-white/5 dark:hover:shadow-black/40"
+      className={`group flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-white/5 dark:hover:shadow-black/40 ${
+        product.highlighted
+          ? "border-2 border-primary shadow-lg shadow-primary/20 dark:border-primary"
+          : "border border-slate-100 dark:border-white/10"
+      }`}
     >
       <div className="relative">
         <ProductVisual product={product} className="aspect-[16/10] w-full" />
@@ -21,9 +25,18 @@ export default function ProductCard({ product }: { product: Product }) {
             خصم {discount}%
           </span>
         )}
-        {product.is_new && (
-          <span className="absolute left-3 top-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow">
-            جديد
+        {(product.badge || product.is_new) && (
+          <span className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+            {product.badge && (
+              <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white shadow">
+                {product.badge}
+              </span>
+            )}
+            {product.is_new && (
+              <span className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow">
+                جديد
+              </span>
+            )}
           </span>
         )}
       </div>
