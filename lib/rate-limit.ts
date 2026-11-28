@@ -12,10 +12,16 @@ type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
 function clientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
+  // Vercel بيحط الـ IP الحقيقي للعميل في x-real-ip، وبيضيفه في آخر
+  // x-forwarded-for. أخذ أول قيمة في x-forwarded-for غلط — لأن العميل
+  // نفسه يقدر يزوّرها في الطلب ويتهرب من الحدّ (أو يحدّ غيره).
   const real = req.headers.get("x-real-ip");
   if (real) return real.trim();
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const parts = forwarded.split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
   return "unknown";
 }
 
